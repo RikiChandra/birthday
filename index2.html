@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hero File: Clara</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0c0c0c;
+            color: #00ffcc;
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .file-container {
+            width: 100%;
+            max-width: 600px;
+            border: 2px solid #00ffcc;
+            padding: 20px;
+            box-shadow: 0 0 20px #00ffcc44;
+            background-color: #111;
+            display: none;
+        }
+
+        .line {
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+            min-height: 1em;
+            word-break: break-word;
+            font-size: 1rem;
+        }
+
+        .badge {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #fff;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        .shield {
+            width: 80px;
+            animation: spin 4s linear infinite;
+        }
+
+        .opening {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #000;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+            display: none;
+            /* awalnya disembunyikan */
+            justify-content: center;
+            align-items: center;
+            animation: fadeOut 1s ease-in-out forwards;
+            animation-delay: 3s;
+            pointer-events: none;
+        }
+
+        .opening img {
+            width: 200px;
+            animation: spinShield 3s linear;
+        }
+
+        .closing-credits {
+            margin-top: 20px;
+            color: #00ffcc;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            animation: fadeIn 2s ease-in-out;
+            padding: 20px;
+            border-top: 1px solid #00ffcc;
+        }
+
+
+        #transmission {
+            display: none;
+            font-size: 1.3rem;
+            color: #00ffcc;
+            margin-top: 40px;
+            text-align: center;
+            font-weight: bold;
+            animation: fadeIn 1s ease-in-out forwards;
+            text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+        }
+
+        .loading-dots::after {
+            content: '';
+            display: inline-block;
+            width: 1em;
+            text-align: left;
+            animation: dots 1.5s steps(3, end) infinite;
+        }
+
+        @keyframes dots {
+            0% {
+                content: '';
+            }
+
+            33% {
+                content: '.';
+            }
+
+            66% {
+                content: '..';
+            }
+
+            100% {
+                content: '...';
+            }
+        }
+
+
+        #video-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 600px;
+            border: 2px solid #00ffcc;
+        }
+
+        @keyframes spinShield {
+            from {
+                transform: rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: rotate(360deg) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        audio {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .file-container {
+                padding: 15px;
+            }
+
+            .line {
+                font-size: 0.95rem;
+            }
+
+            .badge {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Opening Shield -->
+    <div class="opening" id="opening">
+        <img src="https://cdn.freebiesupply.com/logos/large/2x/marvels-agents-of-shield-logo-png-transparent.png"
+            alt="Shield" />
+    </div>
+
+    <!-- Hero File -->
+    <div class="file-container" id="file">
+        <div class="line" id="line0"></div>
+        <div class="line" id="line1"></div>
+        <div class="line" id="line2"></div>
+        <div class="line" id="line3"></div>
+        <div class="line" id="line4"></div>
+        <div class="line" id="line5"></div>
+        <div class="line" id="line6"></div>
+
+        <div class="badge" id="badge">
+            Happy Birthday, Clara!
+            <br />
+            Terus jadi versi terbaik dari dirimu.
+            <br />
+            <img class="shield"
+                src="https://cdn.freebiesupply.com/logos/large/2x/marvels-agents-of-shield-logo-png-transparent.png"
+                alt="Shield" />
+        </div>
+    </div>
+
+    <!-- Transisi -->
+    <div id="transmission">Incoming Transmission from Captain America...</div>
+
+    <!-- Video -->
+    <div id="video-container">
+        <video id="captainVideo">
+            <source
+                src="video/Spider-Man_ Homecoming (Post-credit Scene)- Captain America's Speech [HD] - YouTube_Dubbed_original.mp4"
+                type="video/mp4" />
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Suara Ketik -->
+    <audio controls id="type-sound" src="audio/morse-code-alphabet-67056.mp3" type="audio/mpeg"></audio>
+
+    <!-- Musik Latar -->
+    <audio id="bg-music" src="audio/secret-agent-opening-theme-277558.mp3" loop></audio>
+
+    <script>
+        const lines = [
+            "[CLASSIFIED FILE - LEVEL 5 ACCESS]",
+            "Name: CLARA",
+            "Codename: STAR SENTINEL",
+            "Affiliation: Avengers Support Unit",
+            "Strengths: Reliable • Positive Energy • Great Listener",
+            "Special Trait: Bisa bikin suasana lebih hangat 💫",
+            "Status: Active — Celebrating birthday today 🎉"
+        ];
+
+        const typeSound = document.getElementById("type-sound");
+        const bgMusic = document.getElementById("bg-music");
+        const fileContainer = document.getElementById("file");
+        const transmission = document.getElementById("transmission");
+        const videoContainer = document.getElementById("video-container");
+        const captainVideo = document.getElementById("captainVideo");
+        const opening = document.getElementById("opening");
+
+        function typeLine(lineText, elementId, callback) {
+            let i = 0;
+            const el = document.getElementById(elementId);
+            const interval = setInterval(() => {
+                el.textContent += lineText.charAt(i);
+                if (lineText.charAt(i) !== " ") {
+                    typeSound.currentTime = 0;
+                    typeSound.play().catch(() => { });
+                }
+                i++;
+                if (i >= lineText.length) {
+                    clearInterval(interval);
+                    if (callback) callback();
+                }
+            }, 40);
+        }
+
+        function showLines(index = 0) {
+            if (index < lines.length) {
+                typeLine(lines[index], `line${index}`, () => showLines(index + 1));
+            } else {
+                typeSound.pause();
+                typeSound.currentTime = 0;
+                document.getElementById("badge").style.opacity = 1;
+
+                setTimeout(() => {
+                    fileContainer.style.display = "none";
+                    transmission.classList.add("loading-dots");
+                    transmission.style.display = "block";
+
+                    setTimeout(() => {
+                        transmission.classList.remove("loading-dots");
+                        transmission.style.display = "none";
+                        videoContainer.style.display = "block";
+                        bgMusic.pause();
+                        bgMusic.currentTime = 0;
+                        captainVideo.play();
+                        captainVideo.volume = 1.0;                                            
+                    }, 3000);
+                }, 2000);
+            }
+        }
+
+        captainVideo.onended = () => {
+            const credit = document.createElement("div");
+            credit.className = "closing-credits";
+            credit.innerHTML = `
+                <h2>~ End of Transmission ~</h2>
+                <p>Directed by: Richan</p>
+                <p>Featuring: Clara as <strong>Star Sentinel</strong></p>
+                <p>Audio: Pixabay | Typing SFX: Morse Code</p>
+                <p>Created with ❤️ and too much coffee ☕</p>
+                <p>Happy Birthday, Clara!</p>
+            `;
+            videoContainer.appendChild(credit);
+            credit.scrollIntoView({ behavior: "smooth" });
+        };
+
+
+        function showOpeningAndStart() {
+            opening.style.display = "flex";
+            void opening.offsetWidth;
+
+            setTimeout(() => {
+                opening.style.display = "none";
+                fileContainer.style.display = "block";
+                showLines();
+
+                bgMusic.volume = 0.3;
+                bgMusic.play().catch(() => {
+                    console.warn("Autoplay blocked. User must interact.");
+                });
+            }, 4000);
+        }
+
+        window.addEventListener('load', () => {
+            Swal.fire({
+                title: 'Permission Request',
+                html: 'This experience includes music and video.<br>Tekan tombol di bawah untuk memulai.',
+                icon: 'info',
+                confirmButtonText: 'Start Experience',
+                background: '#111',
+                color: '#00ffcc',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showOpeningAndStart();
+                } else {
+                    Swal.fire('Playback Cancelled', 'Beberapa fitur mungkin tidak akan berjalan.', 'warning');
+                }
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>
